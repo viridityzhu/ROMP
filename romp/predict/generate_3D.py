@@ -1,7 +1,11 @@
 '''
-Modified image.py
-so the usage is the same: python -m romp.predict.generate_3D --inputs=3D-Person-reID/3DMarket/split/market_demo --output_dir=demo/image_results
+Modified image.py to add 2D-to-3D color mapping on the generated .obj mesh file.
+
+The usage is the same:
+python -m romp.predict.generate_3D --inputs=3D-Person-reID/3DMarket/split/market_demo --output_dir=demo/image_results
+
 mark: output_dir is useless. The .obj file will be saved into ROMP/3D-Person-reID/3DMarket/split/<folderName>
+
 -- Zhu Jiayin
 '''
 
