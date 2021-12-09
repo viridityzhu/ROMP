@@ -1,6 +1,7 @@
 <h1 align="center"> 
   <img src="../assets/demo/ROMP_logo.png" width="20%" />
 </h1>
+
 Modified image.py to add 2D-to-3D color mapping on the generated .obj mesh file.
 
 The usage is the same:
