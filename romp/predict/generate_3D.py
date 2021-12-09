@@ -83,13 +83,33 @@ class Image_processor(Predictor):
             img_path = outputs['meta_data']['imgpath'][verts_vids[0]]
             for subject_idx, batch_idx in enumerate(verts_vids):
                 img = outputs['meta_data']['image'][batch_idx]
+
+                # crop padding of the img
+
+                print('idx, sub_idx, batch_idx')
+                print(idx, subject_idx, batch_idx)
+                offsets = outputs['meta_data']['offsets'].cpu().numpy().astype(np.int)[batch_idx]
+                offsets = np.reshape(offsets, (1, 10))
+                img_pad_size, crop_trbl, pad_trbl = offsets[:,:2], offsets[:,2:6], offsets[:,6:10]
+                org_imge = cv2.imread(img_path)
+                print(org_imge.shape)
+                # (ih, iw), (ph,pw) = org_imge.shape[:2], img_pad_size[subject_idx]
+                # resized_images = cv2.resize(org_imge, (ph+1, pw+1), interpolation = cv2.INTER_CUBIC)
+                # (ct, cr, cb, cl), (pt, pr, pb, pl) = *crop_trbl, *pad_trbl
+                # org_imge[ct:ih-cb, cl:iw-cr] = resized_images[pt:ph-pb, pl:pw-pr]
+
+
+                # ------
+
+
                 self.save_obj(outputs['verts'][batch_idx].detach().cpu().numpy().astype(np.float16), \
-                        faces, outputs['params']['cam'][batch_idx].cpu().numpy().astype(np.float16), img, img_path.replace('.jpg', '').replace('.png', '') + '_' + str(subject_idx))
+                        faces, outputs['params']['cam'][batch_idx].cpu().numpy().astype(np.float16), org_imge, img_path.replace('.jpg', '').replace('.png', '') + '_' + str(subject_idx))
 
     def save_obj(self, verts, faces, cam, img, img_path):
         camera = np.reshape(cam, [1, 3]) # 1*3. [[scale, tranlation_x, tranlation_y]]
 
         w, h, _ = img.shape # 128*64 = 8192; 512*512?
+        print(w, h)
         imgsize = max(w, h)
         # project to 2D
         # verts (6890, 3) (pixel, coordination)
@@ -120,9 +140,10 @@ class Image_processor(Predictor):
                 v2 = vert_2d[i, :] # x, y
                 v3 = vert_3d[i, :] # x, y, z
                 z = v3[2]
+                # v2's range is [-1, 1]; (v2+1)/2 becomes [0, 1]; then * imgsize becomes pixel index
                 x = int(round((v2[1] + 1) * 0.5 * imgsize))
                 y = int(round((v2[0] + 1) * 0.5 * imgsize))
-                if w < h:
+                if w < h: # offset
                     x = int(round(x - h / 2 + w / 2))
                 else:
                     y = int(round(y - w / 2 + h / 2))
