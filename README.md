@@ -2,15 +2,15 @@
   <img src="../assets/demo/ROMP_logo.png" width="20%" />
 </h1>
 
-Modified image.py to add 2D-to-3D color mapping on the generated .obj mesh file.
+I add `generate3D.py`, which is a modification of `image.py` to add 2D-to-3D color mapping on the generated .obj mesh file.
 
 The usage is the same:
 
 ```sh
-python -m romp.predict.generate\_3D --inputs=3D-Person-reID/3DMarket/split/market\_demo --output\_dir=demo/image\_results
+python -m romp.predict.generate_3D --inputs=3D-Person-reID/3DMarket/split/market_demo --output_dir=demo/image_results
 ```
 
-mark: output\_dir is useless. The .obj file will be saved into ROMP/3D-Person-reID/3DMarket/split/\<folderName>
+mark: output\_dir is useless. The .obj file will be saved into `ROMP/3D-Person-reID/3DMarket/split/<folderName>`
 
 ---
 
