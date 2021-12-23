@@ -99,7 +99,8 @@ class Visualizer(object):
             if vis_name == 'mesh' and outputs['detection_flag']:
                 per_img_verts_list = [outputs['verts'][inds].detach() for inds in per_img_inds]
                 mesh_trans = [outputs['cam_trans'][inds].detach() for inds in per_img_inds]
-                rendered_imgs = self.visualize_renderer_verts_list(per_img_verts_list, images=org_imgs.copy(), trans=mesh_trans)
+                # rendered_imgs = self.visualize_renderer_verts_list(per_img_verts_list, images=org_imgs.copy(), trans=mesh_trans)
+                rendered_imgs = self.visualize_renderer_verts_list(per_img_verts_list, trans=mesh_trans)
                 
                 if 'put_org' in vis_cfg['settings']:
                     offsets = meta_data['offsets'].cpu().numpy().astype(np.int)[img_inds_org]

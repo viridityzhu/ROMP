@@ -212,6 +212,15 @@ def save_obj(verts, faces, obj_mesh_name='mesh.obj'):
         for f in faces: # Faces are 1-based, not 0-based in obj files
             fp.write( 'f %d %d %d\n' %  (f[0] + 1, f[1] + 1, f[2] + 1) )
 
+def save_obj_color(verts, faces, c, obj_mesh_name='mesh.obj'):
+    #print('Saving:',obj_mesh_name)
+    with open(obj_mesh_name, 'w') as fp:
+        for v in verts:
+            fp.write( 'v %f %f %f %f %f %f\n' % ( v[0], v[1], v[2], c[0], c[1], c[2]) )
+
+        for f in faces: # Faces are 1-based, not 0-based in obj files
+            fp.write( 'f %d %d %d\n' %  (f[0] + 1, f[1] + 1, f[2] + 1) )
+
 def save_json(dicts, name):
     json_str = json.dumps(dicts)
     with open(name, 'w') as json_file:
