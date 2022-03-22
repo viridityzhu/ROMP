@@ -132,11 +132,11 @@ class Image_processor(Predictor):
 
         foreground_index_2d = np.zeros((w, h)) + 99999  # shape: w*h, value: 99999
         foreground_value_2d = np.zeros((w, h)) + 99999
-        # background = np.zeros((w,h))
-        # index = 6891
+        background = np.zeros((w,h))
+        index = 6891
         with open(obj_mesh_name, 'w') as fp:
-            # w, h, _ = img.shape
-            # imgsize = max(w, h)
+            w, h, _ = img.shape
+            imgsize = max(w, h)
             # Decide Forground
             for i in range(vert_2d.shape[0]): # i is pixel index
                 v2 = vert_2d[i, :] # x, y
@@ -155,17 +155,17 @@ class Image_processor(Predictor):
                     foreground_index_2d[x, y] = i
                     foreground_value_2d[x, y] = z # most foreground z
             # s smooth
-            # z_max = max(vert_3d[:, 2]) - min(vert_3d[:, 2])
-            # for t in range(10):
-            #     for i in range(1, w - 1):
-            #         for j in range(1, h - 1):
-            #             center = foreground_value_2d[i, j]
-            #             if foreground_index_2d[i - 1, j] != 999999 and foreground_value_2d[i - 1, j] > center + 0.05:
-            #                 foreground_index_2d[i - 1, j] = 999999
-            #                 foreground_value_2d[i - 1, j] = 999999
-            #             if foreground_index_2d[i, j - 1] != 999999 and foreground_value_2d[i, j - 1] > center + 0.05:
-            #                 foreground_index_2d[i, j - 1] = 999999
-            #                 foreground_value_2d[i, j - 1] = 999999
+            z_max = max(vert_3d[:, 2]) - min(vert_3d[:, 2])
+            for t in range(10):
+                for i in range(1, w - 1):
+                    for j in range(1, h - 1):
+                        center = foreground_value_2d[i, j]
+                        if foreground_index_2d[i - 1, j] != 999999 and foreground_value_2d[i - 1, j] > center + 0.05:
+                            foreground_index_2d[i - 1, j] = 999999
+                            foreground_value_2d[i - 1, j] = 999999
+                        if foreground_index_2d[i, j - 1] != 999999 and foreground_value_2d[i, j - 1] > center + 0.05:
+                            foreground_index_2d[i, j - 1] = 999999
+                            foreground_value_2d[i, j - 1] = 999999
             # Draw Color
             for i in range(vert_2d.shape[0]):
                 v2 = vert_2d[i, :]
@@ -191,36 +191,36 @@ class Image_processor(Predictor):
                 fp.write('v %f %f %f %f %f %f\n' %
                          (v3[0], v3[1], v3[2], c[0], c[1], c[2]))  # x, y, z, r,g,b
             # 2D to 3D mapping
-            # for i in range(w):
-            #     for j in range(h):
-            #         vx, vy = i, j
-            #         if foreground_index_2d[i, j] < 99999:
-            #             continue
-            #         if w < h:
-            #             vx = vx + h / 2 - w / 2
-            #         else:
-            #             vy = vy + w / 2 - h / 2
-            #         vx = vx / imgsize * 2 - 1
-            #         vy = vy / imgsize * 2 - 1
+            for i in range(w):
+                for j in range(h):
+                    vx, vy = i, j
+                    if foreground_index_2d[i, j] < 99999:
+                        continue
+                    if w < h:
+                        vx = vx + h / 2 - w / 2
+                    else:
+                        vy = vy + w / 2 - h / 2
+                    vx = vx / imgsize * 2 - 1
+                    vy = vy / imgsize * 2 - 1
 
-            #         vy /= camera[0, 0]
-            #         vy -= camera[:, 1]
-            #         vx /= camera[0, 0]
-            #         vx -= camera[:, 2]
-            #         vz = np.mean(verts[:, 2])
-            #         c = img[i, j, :] / 255.0
-            #         fp.write('v %f %f %f %f %f %f\n' %
-            #                  (vy, vx, vz, c[0], c[1], c[2]))
-            #         background[i, j] = index
-            #         index += 1
+                    vy /= camera[0, 0]
+                    vy -= camera[:, 1]
+                    vx /= camera[0, 0]
+                    vx -= camera[:, 2]
+                    vz = np.mean(verts[:, 2])
+                    c = img[i, j, :] / 255.0
+                    fp.write('v %f %f %f %f %f %f\n' %
+                             (vy, vx, vz, c[0], c[1], c[2]))
+                    background[i, j] = index
+                    index += 1
 
             for f in faces:  # Faces are 1-based, not 0-based in obj files
                 fp.write('f %d %d %d\n' % (f[0] + 1, f[1] + 1, f[2] + 1))
                 # break  # skip for small file
             # count = 0
-            # for i in range(1, w):
-            #     for j in range(1, h):
-            #         fp.write( 'f %d %d %d %d\n' % (background[i,j], background[i-1,j] ,background[i,j-1] , background[i-1, j-1]))
+            for i in range(1, w):
+                for j in range(1, h):
+                    fp.write( 'f %d %d %d %d\n' % (background[i,j], background[i-1,j] ,background[i,j-1] , background[i-1, j-1]))
             print('Finish', obj_mesh_name)
 
 
